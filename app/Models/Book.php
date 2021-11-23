@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use \DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -14,6 +15,12 @@ class Book extends Model
      */
     protected $fillable = [
         // TODO: Insert your fillable fields
+        'title',
+        'description',
+        'author',
+        'year',
+        'synopsis',
+        'stock',
     ];
 
     /**
@@ -22,6 +29,18 @@ class Book extends Model
      * @var array
      */
     protected $hidden = [
-        // TODO: Insert your hidden fields
+        // Nothing in hidden attributes
     ];
+
+    // Helper function to make ensure that timestamps returned as format below
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
+    // Relationship function to Transaction Model
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
+    }
 }

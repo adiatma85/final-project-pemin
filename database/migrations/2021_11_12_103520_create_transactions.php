@@ -16,8 +16,15 @@ class CreateTransactions extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             // This is where you type your code
-
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('book_id');
+            $table->date('deadline')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
+            // Foreign
+            $table->foreign('user_id', 'user_transaction_fk_001')->on('users')->references('id');
+            $table->foreign('book_id', 'book_transaction_fk_002')->on('books')->references('id');
         });
     }
 
