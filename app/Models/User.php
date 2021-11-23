@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -57,6 +58,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         if ($input) {
             $this->attributes['password'] = app('hash')->needsRehash($input) ? Hash::make($input) : $input;
         }
+    }
+
+    // Checking Password
+    public function checkPassword($inputPassword)
+    {
+        return Hash::check($inputPassword, $this->password);
     }
 
     // Relationship function to Transaction Model

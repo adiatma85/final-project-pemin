@@ -4,9 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use App\Http\Traits\ResponseTrait;
+use App\Models\User;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
+use Firebase\JWT\ExpiredException;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class Authenticate
 {
+
+    use ResponseTrait;
+
     /**
      * The authentication guard factory instance.
      *
@@ -20,9 +30,8 @@ class Authenticate
      * @param  \Illuminate\Contracts\Auth\Factory  $auth
      * @return void
      */
-    public function __construct(Auth $auth)
+    public function __construct()
     {
-        $this->auth = $auth;
     }
 
     /**
@@ -30,15 +39,34 @@ class Authenticate
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param  string|null  $role
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next, $role = null)
     {
-        if ($this->auth->guard($guard)->guest()) {
-            return response('Unauthorized.', 401);
+        $token = $request->header('Authorization');
+        if (!$token) {
+            return $this->response(true, 'token is not provided', null, Response::HTTP_UNAUTHORIZED);
         }
 
+        try {
+            $jwt = explode(' ', $token)[1]; //Bearer
+            $credentials = JWT::decode($jwt, new Key(env('JWT_KEY', 'secret'), 'HS256'));
+        } catch (ExpiredException $th) {
+            return $this->response(false, 'token is expired', null, Response::HTTP_UNAUTHORIZED);
+        } catch (Exception $e) {
+            return $this->response(false, 'internal server error at auth middleware func', null, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $user = User::where('email', $credentials->sub)->first();
+        if ($role) {
+            $condition = $user->hasRole($role);
+            if (!$condition) {
+                return $this->response(false, 'unauthorized', null, Response::HTTP_FORBIDDEN);
+            }
+        }
+
+        $request->user = $user;
         return $next($request);
     }
 }

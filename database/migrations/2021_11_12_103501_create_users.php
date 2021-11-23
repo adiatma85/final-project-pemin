@@ -19,7 +19,7 @@ class CreateUsers extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['user', 'admin']);
+            $table->enum('role', ['user', 'admin'])->default('user');
             $table->timestamps();
             $table->softDeletes();
         });
