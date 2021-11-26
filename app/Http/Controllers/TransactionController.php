@@ -44,12 +44,18 @@ class TransactionController extends Controller
     {
         try {
             $transaction = Transaction::where('id', $transactionId)
-                ->where('user_id', $request->user->id);
+                // ->where('user_id', $request->user->id)
+                ;
 
             if ($transaction->exists()) {
                 $condition = $request->user->hasRole('admin');
                 $transaction = $condition ? $transaction->with(['user', 'book'])->first() : $transaction->with(['book'])->first();
-                return $this->response(true, 'success to fetch particular resources', compact('transaction'), Response::HTTP_OK);
+                if ($condition || $request->user->id == $transaction->user->id) {
+                    return $this->response(true, 'success to fetch particular resources', compact('transaction'), Response::HTTP_OK);
+                }
+
+                // Else
+                return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
             } else {
                 return $this->response(false, 'failed to fetch particular resources', null, Response::HTTP_NOT_FOUND);
             }

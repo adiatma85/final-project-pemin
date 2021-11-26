@@ -44,6 +44,9 @@ class Authenticate
      */
     public function handle($request, Closure $next, $role = null)
     {
+        // return response()->json([
+        //     'role' => $role
+        // ]);
         $token = $request->header('Authorization');
         if (!$token) {
             return $this->response(false, 'token is not provided', null, Response::HTTP_UNAUTHORIZED);

@@ -36,12 +36,12 @@ class UserController extends Controller
     }
 
     // To get particular user
-    public function getById($userId)
+    public function getById(Request $request, $userId)
     {
         try {
             $user = User::find($userId);
             if ($user) {
-                if ($user->hasRole('admin')) {
+                if ($request->user->hasRole('admin') || $request->user->isSamePerson($userId)) {
                     return $this->response(true, 'success to fetch praticular resource', compact('user'), Response::HTTP_OK);
                 } else {
                     return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
@@ -60,7 +60,7 @@ class UserController extends Controller
         try {
             $user = User::where('id', $userId);
             if ($user->exists()) {
-                if ($user->isSamePerson($userId)) {
+                if ($request->user->isSamePerson($userId)) {
                     $user->update($request->all());
                     return $this->response(true, 'success to update a resource', ['user' => $user->first()], Response::HTTP_OK);
                 } else {
@@ -75,15 +75,20 @@ class UserController extends Controller
     }
 
     // To delete particular user
-    public function delete($userId)
+    public function delete(Request $request, $userId)
     {
         try {
             $user = User::where('id', $userId);
             if ($user->exists()) {
-                if ($user->isSamePerson($userId)) {
+                if ($request->user->isSamePerson($userId)) {
                     $user->delete();
                     return $this->response(true, 'success to delete a resource', null, Response::HTTP_OK);
-                } else {
+                } 
+                // else if ($request->user->hasRole('admin')) {
+                //     $user->delete();
+                //     return $this->response(true, 'success to delete a resource', null, Response::HTTP_OK);
+                // } 
+                else {
                     return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
                 }
             } else {
