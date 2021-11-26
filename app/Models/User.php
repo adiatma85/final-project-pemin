@@ -60,6 +60,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
     }
 
+    // Is same person
+    public function isSamePerson($userId)
+    {
+        return $this->id == $userId;
+    }
+
     // Checking Password
     public function checkPassword($inputPassword)
     {

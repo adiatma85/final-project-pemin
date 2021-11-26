@@ -41,7 +41,11 @@ class UserController extends Controller
         try {
             $user = User::find($userId);
             if ($user) {
-                return $this->response(true, 'success to fetch praticular resource', compact('user'), Response::HTTP_OK);
+                if ($user->hasRole('admin')) {
+                    return $this->response(true, 'success to fetch praticular resource', compact('user'), Response::HTTP_OK);
+                } else {
+                    return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
+                }
             } else {
                 return $this->response(false, 'failed to search particular resource', null, Response::HTTP_NOT_FOUND);
             }
@@ -56,8 +60,12 @@ class UserController extends Controller
         try {
             $user = User::where('id', $userId);
             if ($user->exists()) {
-                $user->update($request->all());
-                return $this->response(true, 'success to update a resource', ['user' => $user->first()], Response::HTTP_OK);
+                if ($user->isSamePerson($userId)) {
+                    $user->update($request->all());
+                    return $this->response(true, 'success to update a resource', ['user' => $user->first()], Response::HTTP_OK);
+                } else {
+                    return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
+                }
             } else {
                 return $this->response(false, 'particular resopnse does not found', null, Response::HTTP_NOT_FOUND);
             }
@@ -72,8 +80,12 @@ class UserController extends Controller
         try {
             $user = User::where('id', $userId);
             if ($user->exists()) {
-                $user->delete();
-                return $this->response(true, 'success to delete a resource', null, Response::HTTP_OK);
+                if ($user->isSamePerson($userId)) {
+                    $user->delete();
+                    return $this->response(true, 'success to delete a resource', null, Response::HTTP_OK);
+                } else {
+                    return $this->response(false, 'forbidden request', null, Response::HTTP_FORBIDDEN);
+                }
             } else {
                 return $this->response(false, 'particular resource does not found', null, Response::HTTP_NOT_FOUND);
             }

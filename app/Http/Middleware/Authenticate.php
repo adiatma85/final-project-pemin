@@ -46,7 +46,7 @@ class Authenticate
     {
         $token = $request->header('Authorization');
         if (!$token) {
-            return $this->response(true, 'token is not provided', null, Response::HTTP_UNAUTHORIZED);
+            return $this->response(false, 'token is not provided', null, Response::HTTP_UNAUTHORIZED);
         }
 
         try {

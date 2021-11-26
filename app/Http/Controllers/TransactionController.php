@@ -43,7 +43,8 @@ class TransactionController extends Controller
     public function getById(Request $request, $transactionId)
     {
         try {
-            $transaction = Transaction::where('id', $transactionId);
+            $transaction = Transaction::where('id', $transactionId)
+                ->where('user_id', $request->user->id);
 
             if ($transaction->exists()) {
                 $condition = $request->user->hasRole('admin');
@@ -89,7 +90,7 @@ class TransactionController extends Controller
                     return $this->response(false, 'failed to create new resource', null, Response::HTTP_BAD_REQUEST);;
                 }
             } else {
-                return $this->response(false, 'failed to fetch particular resources', null, Response::HTTP_NOT_FOUND);
+                return $this->response(false, 'failed to fetch particular resources', null, Response::HTTP_BAD_REQUEST);
             }
         } catch (\Throwable $th) {
             return $this->response(false, 'error in transaction store func', null, Response::HTTP_INTERNAL_SERVER_ERROR);
