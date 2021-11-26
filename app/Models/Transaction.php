@@ -17,7 +17,9 @@ class Transaction extends Model
      * @var array
      */
     protected $fillable = [
-        // TODO: Insert your fillable fields
+        'user_id',
+        'book_id',
+        'deadline'
     ];
 
     /**
@@ -27,6 +29,13 @@ class Transaction extends Model
      */
     protected $hidden = [
         // Nothing to hidden
+    ];
+
+    protected $dates = [
+        'deadline',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     // Helper function to make ensure that timestamps returned as format below

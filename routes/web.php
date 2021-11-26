@@ -31,35 +31,23 @@ $router->group(['prefix' => 'books'], function () use ($router) {
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->group(['prefix' => 'users'], function () use ($router) {
-        $router->get('/{userId}', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->get('/{userId}', 'UserController@getById');
 
-        $router->put('/{userId}', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->put('/{userId}', 'UserController@update');
 
-        $router->delete('/{userId}', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->delete('/{userId}', 'UserController@delete');
     });
 
     $router->group(['prefix' => 'transactions'], function () use ($router) {
-        $router->get('/', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->get('/', 'TransactionController@index');
 
-        $router->get('/{transactionId}', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->get('/{transactionId}', 'TransactionController@getById');
     });
 });
 
 $router->group(['middleware' => 'auth:admin'], function () use ($router) {
     $router->group(['prefix' => 'users'], function () use ($router) {
-        $router->get('/', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->get('/', 'UserController@index');
     });
 
     $router->group(['prefix' => 'books'], function () use ($router) {
@@ -71,16 +59,12 @@ $router->group(['middleware' => 'auth:admin'], function () use ($router) {
     });
 
     $router->group(['prefix' => 'transactions'], function () use ($router) {
-        $router->put('/{transactionId}', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->put('/{transactionId}', 'TransactionController@update');
     });
 });
 
 $router->group(['middleware' => 'auth:user'], function () use ($router) {
     $router->group(['prefix' => 'transactions'], function () use ($router) {
-        $router->post('/', function () {
-            // TODO: Routes this to the right controller
-        });
+        $router->post('/', 'TransactionController@store');
     });
 });

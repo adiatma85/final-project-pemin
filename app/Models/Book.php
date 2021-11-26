@@ -26,6 +26,12 @@ class Book extends Model
         'stock',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     /**
      * The attributes excluded from the model's JSON form.
      *
