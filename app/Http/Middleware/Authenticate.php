@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Auth\Factory as Auth;
 use App\Http\Traits\ResponseTrait;
 use App\Models\User;
 use Exception;
@@ -44,9 +43,6 @@ class Authenticate
      */
     public function handle($request, Closure $next, $role = null)
     {
-        // return response()->json([
-        //     'role' => $role
-        // ]);
         $token = $request->header('Authorization');
         if (!$token) {
             return $this->response(false, 'token is not provided', null, Response::HTTP_UNAUTHORIZED);
@@ -65,7 +61,7 @@ class Authenticate
         if ($role) {
             $condition = $user->hasRole($role);
             if (!$condition) {
-                return $this->response(false, 'unauthorized', null, Response::HTTP_FORBIDDEN);
+                return $this->response(false, 'forbidden', null, Response::HTTP_FORBIDDEN);
             }
         }
 
